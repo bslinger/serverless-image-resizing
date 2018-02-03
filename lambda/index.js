@@ -38,7 +38,7 @@ exports.handler = function (event, context, callback) {
 
   console.log(event, context, callback);
   const path = event.path;
-  const pathBits = path.split(/\/+/);
+  const pathBits = path.split(/\/+/).filter(function(bit) { return bit.length > 0; });
   console.log(pathBits);
   const match = pathBits[0].match(/((\d+)x(\d+))/);
   if (!match) {
