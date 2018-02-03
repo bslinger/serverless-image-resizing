@@ -1,33 +1,28 @@
 'use strict';
 
-const AWS = require('aws-sdk');
+var AWS = require('aws-sdk');
 var https = require('https');
-var request = require('request').defaults({ encoding: null });
 var rp = require('request-promise-native');
 var base64 = require('base-64');
 var utf8 = require('utf8');
 
 const S3 = new AWS.S3({
-  signatureVersion: 'v4',
+  signatureVersion: 'v4'
 });
 const Sharp = require('sharp');
 
-function String2Hex(tmp) {
-  var str = '';
-  for(var i = 0; i < tmp.length; i++) {
-    str += tmp[i].charCodeAt(0).toString(16);
-  }
-  return str;
-}
 
 if (process.env.ALLOWED_DIMENSIONS) {
   const dimensions = process.env.ALLOWED_DIMENSIONS.split(/\s*,\s*/);
-  dimensions.forEach((dimension) => ALLOWED_DIMENSIONS.add(dimension));
+  dimensions.forEach(function (dimension) {
+    ALLOWED_DIMENSIONS.add(dimension)
+  });
 }
 
-const doResize = (body, width, height) => {
+function doResize(body, width, height)
+{
 
-  let buffer = Buffer.from(body);
+  var buffer = Buffer.from(body);
   console.log(buffer);
   return Sharp(buffer)
     .resize(width, height)
@@ -78,7 +73,7 @@ exports.handler = function (event, context, callback) {
     return;
   }
 
-  let replaceUrl = null;
+  var replaceUrl = null;
   if (pathBits.length > 1) {
     try {
       replaceUrl = base64.decode(pathBits[2]);
@@ -88,7 +83,7 @@ exports.handler = function (event, context, callback) {
     }
   }
 
-  let imageURL = null;
+  var imageURL = null;
   try {
     imageURL = base64.decode(encodedURL);
   }
@@ -101,29 +96,32 @@ exports.handler = function (event, context, callback) {
 
   console.log("Getting URL", imageURL);
 
-  rp.get({uri: imageURL, resolveWithFullResponse: true, encoding: null})
-    .then((response) => {
-    //console.log(response);
+  rp.get({ uri: imageURL, resolveWithFullResponse: true, encoding: null })
+    .then(function (response) {
+      //console.log(response);
       return doResize(response.body, width, height)
-        .then(buffer => S3.putObject({
-          Body: buffer,
-          Bucket: BUCKET,
-          ContentType: 'image/png',
-          Key: path,
-        }).promise());
+        .then(function (buffer) {
+            S3.putObject({
+              Body: buffer,
+              Bucket: BUCKET,
+              ContentType: 'image/png',
+              Key: path
+            }).promise();
+          }
+        );
     })
-    .then(() => callback(null, {
-      statusCode: '301',
-      headers: { 'location': `${URL}/${path}` },
-      body: '',
-    }))
-    .catch((e) => {
-      if (e.response)
-      {
+    .then(function () {
+      callback(null, {
+        statusCode: '301',
+        headers: { 'location': URL + '/' + path },
+        body: ''
+      })
+    })
+    .catch(function (e) {
+      if (e.response) {
         console.log("failed", e.response.statusCode, replaceUrl);
       }
-      else
-      {
+      else {
         console.log("failed", e.message);
       }
       return callback(null, replaceUrl ? {
@@ -135,4 +133,4 @@ exports.handler = function (event, context, callback) {
         })
     });
 
-}
+};
