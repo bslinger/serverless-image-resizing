@@ -100,6 +100,9 @@ exports.handler = function (event, context, callback) {
 
   console.log("Getting URL", imageURL);
 
+  // keep images for a month
+  var maxAge = 60 * 60 * 24 * 30;
+
   rp.get({ uri: imageURL, resolveWithFullResponse: true, encoding: null })
     .then(function (response) {
       //console.log(response);
@@ -109,7 +112,8 @@ exports.handler = function (event, context, callback) {
               Body: buffer,
               Bucket: BUCKET,
               ContentType: 'image/png',
-              Key: path
+              Key: path,
+              CacheControl: 'max-age=' + maxAge
             }).promise();
           }
         )
