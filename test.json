@@ -1,0 +1,12 @@
+{
+  "resource": "Resource path",
+  "path": "/40x40/aHR0cHM6Ly9jb20tcG9kaWFudC5hbXMzLmRpZ2l0YWxvY2VhbnNwYWNlcy5jb20vbWVkaWEvc3Bva2UvYml0c3Rvcm0vYXJ0d29yay8zNTVjYTZhNGRiZjNkMC5qcGc=",
+  "httpMethod": "GET",
+  "headers": {},
+  "queryStringParameters": {},
+  "pathParameters":  {},
+  "stageVariables": {},
+  "requestContext": {},
+  "body": null,
+  "isBase64Encoded": false
+}
