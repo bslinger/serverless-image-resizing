@@ -16,6 +16,7 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       AccessControl: PublicRead
+      BucketName:
       WebsiteConfiguration:
         IndexDocument: index.html
         RoutingRules:
