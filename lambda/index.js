@@ -37,7 +37,11 @@ exports.handler = function (event, context, callback) {
   const ALLOWED_DIMENSIONS = new Set();
 
   console.log(event, context, callback);
-  const path = event.queryStringParameters.key;
+  var path = event.queryStringParameters.key;
+  if (path.charAt(0) == '/')
+  {
+    path = path.substr(1);
+  }
   const pathBits = path.split(/\/+/).filter(function(bit) { return bit.length > 0; });
   console.log(pathBits);
   const match = pathBits[0].match(/((\d+)x(\d+))/);
