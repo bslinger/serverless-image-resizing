@@ -2,9 +2,9 @@
 
 set -o errexit
 
-stack_name=ServerlessImageResize
+stack_name=PodchaserImageResize
 region="$(aws configure get region)"
-bucket_name="temp-serverless-resize-$(openssl rand -hex 8)"
+bucket_name="cachedimages.podchaser.com-$(openssl rand -hex 8)"
 account_id="$(aws sts get-caller-identity --query Account --output text \
   | xargs echo -n)"
 
