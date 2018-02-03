@@ -108,7 +108,14 @@ exports.handler = function (event, context, callback) {
               Key: path
             }).promise();
           }
-        );
+        )
+        .catch(function (e) {
+          console.log("failed", e.message);
+          return callback(null, {
+            statusCode: '404',
+            message: e.message
+          })
+        });
     })
     .then(function () {
       callback(null, {
