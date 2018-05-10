@@ -1,0 +1,7 @@
+{
+  "lambda": {
+    "role": "image-resize-executor",
+    "name": "image-resize",
+    "region": "us-east-1"
+  }
+}

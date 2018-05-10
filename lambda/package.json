@@ -7,17 +7,31 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "dependencies": {
+    "aws-sdk": "^2.226.1",
     "base-64": "^0.1.0",
     "dotenv": "^5.0.0",
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5",
-    "sharp": "^0.17.3",
+    "sharp": "^0.20.1",
     "utf8": "^3.0.0"
   },
-  "scripts": {
-    "test": "node test.js"
-  },
   "devDependencies": {
-    "aws-sdk": "^2.36.0"
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1"
+  },
+  "scripts": {
+    "transpile": "rm -rf dist  && babel src -d dist",
+    "test": "yarn run transpile && lambda-local -l dist/index.js -h handler -e lambda-examples/api-gateway.js -t 60",
+    "create": "yarn run transpile && claudia create --region us-east-1 --use-s3-bucket podchaser-claudia --runtime nodejs6.10 --verbose --handler dist/index.handler",
+    "update": "yarn run transpile && claudia update"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
+    ]
   }
 }

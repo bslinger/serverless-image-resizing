@@ -1,5 +1,6 @@
 'use strict';
 
+require('dotenv').config();
 var AWS = require('aws-sdk');
 var https = require('https');
 var rp = require('request-promise-native');
@@ -21,12 +22,13 @@ if (process.env.ALLOWED_DIMENSIONS) {
 
 function doResize(body, width, height)
 {
-
   var buffer = Buffer.from(body);
   console.log(buffer);
   return Sharp(buffer)
     .resize(width, height)
-    .toFormat('png')
+    .png({
+      compressionLevel: 9,
+    })
     .toBuffer();
 }
 
@@ -108,12 +110,12 @@ exports.handler = function (event, context, callback) {
       //console.log(response);
       return doResize(response.body, width, height)
         .then(function (buffer) {
-            S3.putObject({
+            return S3.putObject({
               Body: buffer,
               Bucket: BUCKET,
               ContentType: 'image/png',
               Key: path,
-              CacheControl: 'max-age=' + maxAge
+              CacheControl: `max-age=${maxAge}`
             }).promise();
           }
         )
