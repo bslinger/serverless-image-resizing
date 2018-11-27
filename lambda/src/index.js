@@ -121,10 +121,15 @@ exports.handler = function (event, context, callback) {
         )
         .catch(function (e) {
           console.log("failed", e.message);
-          return callback(null, {
-            statusCode: '404',
-            message: e.message
-          })
+            return callback(null, replaceUrl ? {
+                statusCode: '302',
+                headers: {location: replaceUrl},
+                body: ''
+            } : {
+                statusCode: '404',
+                body: e.message
+            });
+
         });
     })
     .then(function () {
