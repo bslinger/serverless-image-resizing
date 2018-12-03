@@ -40,6 +40,7 @@ exports.handler = function (event, context, callback) {
 
   console.log(event, context, callback);
   var path = event.queryStringParameters.key;
+    console.log("PATH", path);
   if (path.charAt(0) == '/')
   {
     path = path.substr(1);
@@ -68,7 +69,38 @@ exports.handler = function (event, context, callback) {
     return;
   }
 
-  const encodedURL = pathBits[1];
+    let lastUrlBit = pathBits[pathBits.length - 1];
+    console.log('lastUrlBit', lastUrlBit);
+
+
+    // check the last bit to see if it's a valid URL by itself
+    var replaceUrl = null;
+    if (pathBits.length > 1) {
+        try {
+
+            replaceUrl = base64.decode(lastUrlBit);
+        }
+        catch (e) {
+            // might mean we need to use all path bits to create the URL
+        }
+    }
+
+    console.log(replaceUrl);
+
+    function callback404(message) {
+        console.log('callback404', replaceUrl, message);
+        return callback(null, replaceUrl ? {
+            statusCode: '302',
+            headers: {location: replaceUrl},
+            body: ''
+        } : {
+            statusCode: '404',
+            body: message
+        });
+    }
+
+    // if there's a '/' in the base64 encoded data, this needs to grab and concatenate all the bits
+    const encodedURL = pathBits.slice(1, replaceUrl ? pathBits.length - 1 : pathBits.length).join('/');
 
   if (ALLOWED_DIMENSIONS.size > 0 && !ALLOWED_DIMENSIONS.has(dimensions)) {
     callback(null, {
@@ -79,25 +111,15 @@ exports.handler = function (event, context, callback) {
     return;
   }
 
-  var replaceUrl = null;
-  if (pathBits.length > 1) {
-    try {
-      replaceUrl = base64.decode(pathBits[2]);
-    }
-    catch (e) {
-      // just don't use a replace URL?
-    }
-  }
 
-  var imageURL = null;
+    var imageURL = null;
   try {
     imageURL = base64.decode(encodedURL);
   }
   catch (e) {
-    return callback(null, {
-      statusCode: '404',
-      body: 'error decoding image URL'
-    });
+
+      return callback404('error decoding image URL');
+
   }
 
   console.log("Getting URL", imageURL);
@@ -105,7 +127,8 @@ exports.handler = function (event, context, callback) {
   // keep images for a month
   var maxAge = 60 * 60 * 24 * 30;
 
-  rp.get({ uri: imageURL, resolveWithFullResponse: true, encoding: null })
+
+    rp.get({uri: imageURL, resolveWithFullResponse: true, encoding: null})
     .then(function (response) {
       //console.log(response);
       return doResize(response.body, width, height)
@@ -120,15 +143,8 @@ exports.handler = function (event, context, callback) {
           }
         )
         .catch(function (e) {
-          console.log("failed", e.message);
-            return callback(null, replaceUrl ? {
-                statusCode: '302',
-                headers: {location: replaceUrl},
-                body: ''
-            } : {
-                statusCode: '404',
-                body: e.message
-            });
+            console.log("failed image", e.message);
+            return callback404(e.message);
 
         });
     })
@@ -144,7 +160,7 @@ exports.handler = function (event, context, callback) {
         console.log("failed", e.response.statusCode, replaceUrl);
       }
       else {
-        console.log("failed", e.message);
+          console.log("failed", e.message, replaceUrl);
       }
       return callback(null, replaceUrl ? {
           statusCode: '302',
