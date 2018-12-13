@@ -128,7 +128,12 @@ exports.handler = function (event, context, callback) {
   var maxAge = 60 * 60 * 24 * 30;
 
 
-    rp.get({uri: imageURL, resolveWithFullResponse: true, encoding: null})
+    rp.get({
+        uri: imageURL,
+        resolveWithFullResponse: true,
+        encoding: null,
+        headers: {'User-Agent': 'Podchaser/ImageResizeCache'}
+    })
     .then(function (response) {
       //console.log(response);
       return doResize(response.body, width, height)
@@ -157,7 +162,7 @@ exports.handler = function (event, context, callback) {
     })
     .catch(function (e) {
       if (e.response) {
-        console.log("failed", e.response.statusCode, replaceUrl);
+          console.log("failed", e.request.headers, e.response.statusCode, replaceUrl);
       }
       else {
           console.log("failed", e.message, replaceUrl);
