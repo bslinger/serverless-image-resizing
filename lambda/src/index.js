@@ -163,7 +163,7 @@ exports.handler = function (event, context, callback) {
     })
     .catch(function (e) {
       if (e.response) {
-          console.log("failed", e.request.headers, e.response.statusCode, replaceUrl);
+          console.log("failed", e.request && e.request.headers, e.response.statusCode, replaceUrl);
       }
       else {
           console.log("failed", e.message, replaceUrl);
