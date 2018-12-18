@@ -132,7 +132,8 @@ exports.handler = function (event, context, callback) {
         uri: imageURL,
         resolveWithFullResponse: true,
         encoding: null,
-        headers: {'User-Agent': 'Podchaser/ImageResizeCache'}
+        headers: {'User-Agent': 'Podchaser/ImageResizeCache'},
+        timeout: 8000
     })
     .then(function (response) {
       //console.log(response);
