@@ -23,7 +23,7 @@ if (process.env.ALLOWED_DIMENSIONS) {
 function doResize(body, width, height)
 {
   var buffer = Buffer.from(body);
-  console.log(buffer);
+    console.log(buffer, width, height);
   return Sharp(buffer)
     .resize(width, height)
     .png({
@@ -38,7 +38,7 @@ exports.handler = function (event, context, callback) {
   const URL = process.env.URL;
   const ALLOWED_DIMENSIONS = new Set();
 
-  console.log(event, context, callback);
+    //console.log(event, context, callback);
   var path = event.queryStringParameters.key;
     console.log("PATH", path);
   if (path.charAt(0) == '/')
@@ -47,7 +47,7 @@ exports.handler = function (event, context, callback) {
   }
   const pathBits = path.split(/\/+/).filter(function(bit) { return bit.length > 0; });
   console.log(pathBits);
-  const match = pathBits[0].match(/((\d+)x(\d+))/);
+    const match = pathBits[0].match(/((\d+)x(\d+)?)/);
   if (!match) {
     callback(null, {
       statusCode: '403',
@@ -58,7 +58,7 @@ exports.handler = function (event, context, callback) {
   }
   const dimensions = match[1];
   const width = parseInt(match[2], 10);
-  const height = parseInt(match[3], 10);
+    const height = match[3] ? parseInt(match[3], 10) : null;
 
   if (pathBits.length <= 1) {
     callback(null, {
@@ -114,6 +114,7 @@ exports.handler = function (event, context, callback) {
 
     var imageURL = null;
   try {
+      console.log(encodedURL);
     imageURL = base64.decode(encodedURL);
   }
   catch (e) {
