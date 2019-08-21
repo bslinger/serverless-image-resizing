@@ -72,10 +72,9 @@ exports.handler = function (event, context, callback) {
     let lastUrlBit = pathBits[pathBits.length - 1];
     console.log('lastUrlBit', lastUrlBit);
 
-
     // check the last bit to see if it's a valid URL by itself
     var replaceUrl = null;
-    if (pathBits.length > 1) {
+    if (pathBits.length > 2) {
         try {
 
             replaceUrl = base64.decode(lastUrlBit);
