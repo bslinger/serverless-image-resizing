@@ -12,6 +12,9 @@ const S3 = new AWS.S3({
 });
 const Sharp = require('sharp');
 
+const fs = require('fs');
+const pathFunc = require('path');
+
 
 if (process.env.ALLOWED_DIMENSIONS) {
     const dimensions = process.env.ALLOWED_DIMENSIONS.split(/\s*,\s*/);
@@ -32,6 +35,19 @@ function doResize(body, width, height) {
 }
 
 exports.handler = function (event, context, callback) {
+
+    // clear everything out of tmp
+    fs.readdir('/tmp', (err, files) => {
+        if (err) throw err;
+
+        for (const file of files) {
+            console.log(`deleting ${file}`);
+            fs.unlink(pathFunc.join('/tmp', file), err => {
+                if (err) console.log(err);
+            });
+        }
+    });
+
 
     const BUCKET = process.env.BUCKET;
     const URL = process.env.URL;
