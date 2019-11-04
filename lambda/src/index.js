@@ -77,7 +77,7 @@ exports.handler = function (event, context, callback) {
     if (pathBits.length > 2) {
         try {
 
-            replaceUrl = base64.decode(lastUrlBit);
+            replaceUrl = base64.decode(decodeURIComponent(lastUrlBit));
         } catch (e) {
             // might mean we need to use all path bits to create the URL
         }
@@ -112,8 +112,8 @@ exports.handler = function (event, context, callback) {
 
     var imageURL = null;
     try {
-        console.log(encodedURL);
-        imageURL = base64.decode(encodedURL);
+        console.log(decodeURIComponent(encodedURL));
+        imageURL = base64.decode(decodeURIComponent(encodedURL));
     } catch (e) {
 
         return callback404('error decoding image URL');
