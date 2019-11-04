@@ -23,7 +23,7 @@
   "scripts": {
     "transpile": "rm -rf dist  && babel src -d dist",
     "test": "yarn run transpile && lambda-local -l dist/index.js -h handler -e lambda-examples/api-gateway.js -t 60",
-    "create": "yarn run transpile && claudia create --region us-east-1 --use-s3-bucket podchaser-claudia --runtime nodejs6.10 --verbose --handler dist/index.handler",
+    "create": "yarn run transpile && claudia create --region us-east-1 --use-s3-bucket podchaser-claudia --runtime nodejs10.x --verbose --handler dist/index.handler",
     "update": "yarn run transpile && claudia update"
   },
   "babel": {
