@@ -28,8 +28,8 @@ function doResize(body, width, height) {
     console.log(buffer, width, height);
     return Sharp(buffer)
         .resize(width, height)
-        .png({
-            compressionLevel: 9,
+        .jpeg({
+            quality: 80
         })
         .toBuffer();
 }
@@ -156,12 +156,15 @@ exports.handler = function (event, context, callback) {
                         return S3.putObject({
                             Body: buffer,
                             Bucket: BUCKET,
-                            ContentType: 'image/png',
+                            ContentType: 'image/jpeg',
                             Key: path,
                             CacheControl: `max-age=${maxAge}`
                         }).promise();
                     }
                 )
+                .then(function(data){
+                    console.log(data);
+                })
                 .catch(function (e) {
                     console.log("failed image", e.message);
                     return callback404(e.message);
