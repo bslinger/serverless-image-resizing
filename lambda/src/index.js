@@ -27,6 +27,8 @@ function doResize(body, width, height) {
     var buffer = Buffer.from(body);
     console.log(buffer, width, height);
     return Sharp(buffer)
+        .background({r: 255, g: 255, b: 255, alpha: 1})
+        .flatten({background: {r: 255, g: 255, b: 255, alpha: 1}})
         .resize(width, height)
         .jpeg({
             quality: 80
@@ -162,7 +164,7 @@ exports.handler = function (event, context, callback) {
                         }).promise();
                     }
                 )
-                .then(function(data){
+                .then(function (data) {
                     console.log(data);
                 })
                 .catch(function (e) {
